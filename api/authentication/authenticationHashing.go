@@ -11,14 +11,6 @@ import (
 	"golang.org/x/crypto/scrypt"
 )
 
-const (
-	PW_SALT_BYTES = 32
-	PW_HASH_BYTES = 64
-
-	MIN_SALT_LEN = 8
-	MIN_DK_LEN   = 16
-)
-
 type ScryptParams struct {
 	N       int // CPU/Mem cost param
 	R       int // Block size param
@@ -31,8 +23,8 @@ var DefaultScryptParams = &ScryptParams{
 	N:       16384,
 	R:       8,
 	P:       1,
-	SaltLen: 32,
-	DKLen:   64,
+	SaltLen: SC_SALT_BYTES,
+	DKLen:   SC_DK_BYTES,
 }
 
 /*
