@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Login</title>
+        <link rel="stylesheet" href="/styles/out/build.css" media="screen">
+    </head>
+    <body>
+        <div class="container">
+            <div class="top-image"></div>
+            <div class="auth-shell" id="signin">
+                <div class="auth-title">
+                    <p>Forgot your password?</p>
+                </div>
+                <div class="forgot-info">
+                    <p>Enter the email address you used to register, you will then recieve a email to reset your password</p>
+                </div>
+                <div class="auth-container">
+                    <form action="/api/authenticate" id="auth-form" method="POST" novalidate="true" autocomplete="off" name="forgot">
+                        <div class="form-field">
+                            <div class="auth-form-title">Email Address</div>
+                            <input id="username-field" type="email" name="email" placeholder="you@example.com" value="" autofocus="on" />
+                            <span class="error-text">Enter a valid email</span>
+                        </div>
+                        <div class="form-submit">
+                            <input type="submit" name="submit" value="Reset Password" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="auth-below">
+                <a href="/login.html">Sign In</a>
+            </div>
+        </div>
+
+        <script type="text/javascript" src="/scripts/out/build.js"></script>
+    </body>
+</html>

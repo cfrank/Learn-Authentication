@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Login</title>
+        <link rel="stylesheet" href="/styles/out/build.css" media="screen">
+    </head>
+    <body>
+        <div class="container">
+            <div class="top-image"></div>
+            <div class="auth-shell" id="signin">
+                <div class="auth-title">
+                    <p>Sign Up</p>
+                </div>
+                <div class="auth-container">
+                    <form action="/api/authenticate" id="auth-form" method="POST" novalidate="true" autocomplete="off" name="signup">
+                        <div class="form-field">
+                            <div class="auth-form-title">Email Address</div>
+                            <input id="username-field" type="email" name="email" placeholder="you@example.com" value="" autofocus="on" />
+                            <span class="error-text">Enter a valid email</span>
+                        </div>
+                        <div class="form-field">
+                            <div class="auth-form-title">Password</div>
+                            <input type="password" name="password-one" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" value="" />
+                            <span class="error-text">Enter a password</span>
+                        </div>
+                        <div class="form-field">
+                            <div class="auth-form-title">Confirm Password</div>
+                            <input type="password" name="password-two" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" value="" />
+                            <span class="error-text">Make sure passwords match</span>
+                        </div>
+                        <div class="form-submit">
+                            <input type="submit" name="submit" value="Sign In" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="auth-below">
+                <a href="/login.html">Have an account? Sign In</a>
+            </div>
+        </div>
+
+        <script type="text/javascript" src="/scripts/out/build.js"></script>
+    </body>
+</html>

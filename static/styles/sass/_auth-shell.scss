@@ -1,0 +1,144 @@
+.auth-shell{
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    background-color: #fff;
+    padding: 0 50px;
+    box-shadow: 0px 1px 1px 0px rgba(127, 127, 127, 0.5);
+    z-index: 2;
+
+    .auth-title{
+        height: 150px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        & > p{
+            font-family: $open-sans;
+            font-size: 24px;
+            font-weight: 600;
+            color: $grey-color;
+        }
+    }
+
+    .forgot-info{
+        margin-bottom: 20px;
+        & > p{
+            font-family: $open-sans;
+            font-size: 14px;
+            font-weight: 400;
+            color: $dark-grey;
+            text-align: center;
+        }
+    }
+
+    .auth-container{
+        width: 100%;
+        padding-bottom: 50px;
+
+        form{
+            & > .form-field{
+                display: block;
+                &:not(:last-child){
+                    margin-bottom: 20px;
+                }
+
+                & > .auth-form-title{
+                    font-family: $open-sans;
+                    font-size: 15px;
+                    font-weight: 400;
+                    color: $grey-color;
+                }
+
+                & > input{
+                    width: 100%;
+                    height: 40px;
+                    padding: 0px 5px;
+                    background-color: #fff;
+                    border: none;
+                    border-bottom: 1px solid $grey-color;
+                    color: $dark-grey;
+                    outline: none;
+                    transition: border-color 0.5s ease-out;
+
+                    &:focus{
+                        border-color: $green-link;
+                        transition: border-color 0.5s ease-out;
+                    }
+                }
+
+                /* Error text */
+                .error-text{
+                    width: 100%;
+                    max-height: 0px;
+                    visibility: hidden;
+                    opacity: 0;
+                    display: block;
+                    text-align: center;
+                    font-family: $open-sans;
+                    font-size: 14px;
+                    color: $error-red;
+                    transition:
+                        max-height 0.3s ease-out,
+                        opacity 0.3s ease-out;
+                }
+
+                &.error{
+                    input{
+                        background-color: #fbf0f0;
+                        border-color: $error-red;
+                        transition: 
+                            border-color 0.3s ease-out,
+                            background-color 0.3s ease-out;
+                    }
+
+                    .error-text{
+                        max-height: 50px;
+                        visibility: visible;
+                        opacity: 1;
+                        transition:
+                            max-height 0.3s ease-out,
+                            opacity 0.3s ease-out;
+                    }
+                }
+            }
+
+            & > .form-submit{
+                margin-top: 35px;
+
+                & > input{
+                    width: 100%;
+                    height: 50px;
+                    background-color: $dark-green;
+                    border: 1px solid #646e3c;
+                    display: block;
+                    font-size: 18px;
+                    color: #fff;
+                    cursor: pointer;
+                }
+            }
+
+            & > .forgot-password{
+                margin: 20px 0 0;
+                text-align: center;
+
+                & > a{
+                    font-family: $open-sans;
+                    font-size: 14px;
+                    color: $green-link;
+                    text-decoration: none;
+                }
+            }
+        }
+    }
+}
+
+.auth-below{
+    margin-top: 20px;
+
+    & > a{
+        font-family: $open-sans;
+        text-decoration: none;
+        color: $grey-color;
+    }
+}

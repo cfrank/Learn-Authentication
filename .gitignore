@@ -1,0 +1,5 @@
+node_modules
+logs
+static/scripts/out
+static/styles/out
+api/out
