@@ -3,7 +3,7 @@ package authentication
 import (
 	"crypto/rand"
 	"crypto/subtle"
-	"encoding/hex"
+	"encoding/base64"
 	"fmt"
 	"strconv"
 	"strings"
@@ -45,13 +45,30 @@ func GenerateRandomBytes(len int) ([]byte, error) {
 }
 
 /*
- * Generate a password based on the Scrypt Params
+ * Generate a auth token
+ *
+ * The auth token is contains the following information
+ * Selector - A random string used to query the auth_token
+ * table for a hashed authentication validator
+ */
+func GenerateAuthSelector(len int) ([]byte, *AuthenticationError) {
+	authSelector, selectorError := GenerateRandomBytes(len)
+
+	if selectorError != nil {
+		return nil, ServerAuthError
+	}
+
+	return []byte(encodeBytes(authSelector)), nil
+}
+
+/*
+ * Generate a hash from a byte slice
  *
  * Returns a byte slice in the format
  * [MEM COST]&[BlOCK SIZE]&[PAR PARAM]&[SALT]&[DK]
  * where the salt and dk are base16 lowercase (2 bytes per byte)
  */
-func GenerateHashFromPassword(password []byte, params *ScryptParams) ([]byte, *AuthenticationError) {
+func GenerateHashFromSlice(password []byte, params *ScryptParams) ([]byte, *AuthenticationError) {
 	salt, saltError := GenerateRandomBytes(params.SaltLen)
 
 	if saltError != nil {
@@ -64,7 +81,7 @@ func GenerateHashFromPassword(password []byte, params *ScryptParams) ([]byte, *A
 		return nil, ServerAuthError
 	}
 
-	return []byte(fmt.Sprintf("%d&%d&%d&%x&%x", params.N, params.R, params.P, salt, dkey)), nil
+	return []byte(fmt.Sprintf("%d&%d&%d&%s&%s", params.N, params.R, params.P, encodeBytes(salt), encodeBytes(dkey))), nil
 }
 
 /*
@@ -124,14 +141,14 @@ func DecodeHashString(hash []byte) ([]byte, []byte, ScryptParams, *Authenticatio
 		return nil, nil, params, SessionIdError
 	}
 
-	salt, err := hex.DecodeString(hashValues[3])
+	salt, err := base64.URLEncoding.DecodeString(hashValues[3])
 
 	if err != nil {
 		return nil, nil, params, SessionIdError
 	}
 	params.SaltLen = len(salt)
 
-	dk, err := hex.DecodeString(hashValues[4])
+	dk, err := base64.URLEncoding.DecodeString(hashValues[4])
 
 	if err != nil {
 		return nil, nil, params, SessionIdError
@@ -139,4 +156,12 @@ func DecodeHashString(hash []byte) ([]byte, []byte, ScryptParams, *Authenticatio
 	params.DKLen = len(dk)
 
 	return salt, dk, params, nil
+}
+
+/*
+ * A helper function which returns a base64 encoded string
+ * for use when we need a url safe string
+ */
+func encodeBytes(input []byte) string {
+	return base64.URLEncoding.EncodeToString(input)
 }

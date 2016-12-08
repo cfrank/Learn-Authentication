@@ -12,7 +12,7 @@ import (
 func main() {
 	const PORT string = ":8117"
 
-	fmt.Printf("Starting web server on %s", PORT)
+	fmt.Printf("Starting web server on %s\n", PORT)
 
 	// Define the base router
 	router := httptreemux.New()

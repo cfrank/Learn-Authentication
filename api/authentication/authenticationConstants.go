@@ -5,9 +5,12 @@ const (
 	// and retrieval by the server
 	MAXTIMEDIFF int = 30
 
-	// Length of scrypt salt in bytes
+	// Selector length
+	TOKEN_SELECTOR_BYTES int = 12
+
+	// Length of scrypt salt
 	SC_SALT_BYTES int = 32
 
-	// Length of scrypt derived key in bytes
+	// Length of scrypt derived key
 	SC_DK_BYTES int = 64
 )

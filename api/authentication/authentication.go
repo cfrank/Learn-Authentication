@@ -64,21 +64,23 @@ func NewAuth(w http.ResponseWriter, req *http.Request, params map[string]string)
 		return
 	}
 
+	// Generate a authentication token selector
+	authSelector, selectorError := GenerateAuthSelector(TOKEN_SELECTOR_BYTES)
+
+	if selectorError != nil {
+		selectorError.AuthenticationError(w)
+		return
+	}
+
 	// Generate hash value for password
-	hash, hashError := GenerateHashFromPassword([]byte(authValues[1]), DefaultScryptParams)
+	hash, hashError := GenerateHashFromSlice([]byte(authValues[1]), DefaultScryptParams)
 
 	if hashError != nil {
 		ServerAuthError.AuthenticationError(w)
 		return
 	}
 
-	compareError := CompareHashToPassword(hash, []byte("c2thehris"))
-
-	if compareError == nil {
-		fmt.Printf("IT WAS CORRECT\n")
-	}
-
-	fmt.Println(string(hash))
+	fmt.Printf("%s:%s", string(authSelector), string(hash))
 }
 
 func (req *AuthenticationData) validateRequest() *AuthenticationError {
