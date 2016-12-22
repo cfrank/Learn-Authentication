@@ -27,7 +27,7 @@ export async function authCall(data: AuthenticationData, url: string): Promise<s
 export function generateNonce(length: number): string{
     let keySpace: string = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_';
     let nonce: string = '';
-    for(let i: number = 0; i <= length; ++i){
+    for(let i: number = 0; i < length; ++i){
         nonce += keySpace.charAt(Math.floor(Math.random() * keySpace.length));
     }
     return nonce;

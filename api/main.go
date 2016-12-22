@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/cfrank/auth.fun/api/authentication"
+	"github.com/cfrank/auth.fun/api/auth"
 	"github.com/idawes/httptreemux"
 )
 
@@ -20,7 +20,7 @@ func main() {
 	// Routes under /auth
 	authRoute := router.NewGroup("/auth")
 
-	authRoute.POST("/signup", authentication.NewAuth)
+	authRoute.POST("/signup", auth.NewAuth)
 
 	log.Fatal(http.ListenAndServe(PORT, router))
 }
