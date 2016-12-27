@@ -4,8 +4,11 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
 
 	"github.com/cfrank/auth.fun/api/auth"
+	"github.com/cfrank/auth.fun/api/database"
 	"github.com/idawes/httptreemux"
 )
 
@@ -21,6 +24,26 @@ func main() {
 	authRoute := router.NewGroup("/auth")
 
 	authRoute.POST("/signup", auth.NewAuth)
+
+	// Open connection to DB
+	databaseError := database.Open()
+
+	if databaseError != nil && database.MyDb.Alive {
+		log.Fatal("Error: Problem establishing connection to database!")
+	}
+
+	// Defer closing the database
+	defer database.Close()
+
+	// Catch SIGTERM and close DB
+
+	termChan := make(chan os.Signal, 1)
+	signal.Notify(termChan, os.Interrupt)
+	go func() {
+		<-termChan
+		database.Close()
+		os.Exit(1)
+	}()
 
 	log.Fatal(http.ListenAndServe(PORT, router))
 }

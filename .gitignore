@@ -3,3 +3,4 @@ logs
 static/scripts/out
 static/styles/out
 api/out
+api/database/constants.go

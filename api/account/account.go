@@ -1,6 +1,7 @@
 package account
 
 import (
+	//"fmt"
 	"math/rand"
 
 	"github.com/cfrank/auth.fun/api/apierror"
@@ -9,9 +10,10 @@ import (
 
 type Account struct {
 	UserId        string // 16 bytes
-	EmailLocal    string
-	EmailDomain   string
-	PasswordHash  []byte
+	EmailLocal    string // Max 64 bytes
+	EmailDomain   string // Max 190 bytes
+	PasswordHash  string // Max 140 bytes (if scrypt settings change)
+	EmailVerifier []byte // 16 bytes
 	EmailVerified bool
 }
 
@@ -20,6 +22,17 @@ const (
 	LETTER_BYTES     string = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_"
 	MAX_ACC_ID_TRIES int    = 5
 )
+
+func (account *Account) Save() *apierror.ApiError {
+	// Save Account into database
+	insertError := database.InsertAccount(account.UserId, account.EmailLocal, account.EmailDomain, account.PasswordHash, account.EmailVerified)
+
+	if insertError != nil {
+		return insertError
+	}
+
+	return nil
+}
 
 func GenerateAccountId() (string, *apierror.ApiError) {
 	for i := 0; i < MAX_ACC_ID_TRIES; i++ {
@@ -30,6 +43,7 @@ func GenerateAccountId() (string, *apierror.ApiError) {
 		}
 	}
 
+	// Could not find an available account id
 	return "", apierror.ServerAuthError
 }
 

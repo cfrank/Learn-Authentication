@@ -3,7 +3,7 @@ package auth
 import (
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
+	//"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -27,6 +27,8 @@ func NewAuth(w http.ResponseWriter, req *http.Request, params map[string]string)
 		return
 	}
 
+	defer req.Body.Close()
+
 	// Create an empty AuthData struct to be populated
 	var data *AuthData = new(AuthData)
 
@@ -37,10 +39,28 @@ func NewAuth(w http.ResponseWriter, req *http.Request, params map[string]string)
 		return
 	}
 
-	_, createAccountError := data.createAccount()
+	accountData, createAccountError := data.createAccount()
 
 	if createAccountError != nil {
 		createAccountError.Handle(w)
+		return
+	}
+
+	emailVerifier, verifierError := GenerateEmailVerifier()
+
+	if verifierError != nil {
+		verifierError.Handle(w)
+		return
+	}
+
+	accountData.EmailVerifier = emailVerifier
+
+	// Database additions
+	saveError := accountData.Save()
+
+	if saveError != nil {
+		saveError.Handle(w)
+		return
 	}
 }
 
@@ -55,20 +75,20 @@ func (data *AuthData) deconstructAuthString(input io.ReadCloser) *apierror.ApiEr
 	jsonError := json.NewDecoder(input).Decode(&data)
 
 	if jsonError != nil {
-		return apierror.New("Malformed JSON recieved", http.StatusBadRequest)
+		return apierror.New("Malformed JSON received", http.StatusBadRequest)
 	}
 
 	// Deconstruct authString
 	decodedAuthString, decodeError := base64.StdEncoding.DecodeString(data.DataString)
 
 	if decodeError != nil {
-		return apierror.New("Malformed authString recieved", http.StatusBadRequest)
+		return apierror.New("Malformed authString received", http.StatusBadRequest)
 	}
 
 	data.DataContent = strings.Split(string(decodedAuthString), "&")
 
 	if len(data.DataContent) != 2 {
-		return apierror.New("Invalid authString recieved", http.StatusBadRequest)
+		return apierror.New("Invalid authString received", http.StatusBadRequest)
 	}
 
 	return nil
@@ -79,11 +99,11 @@ func (data *AuthData) deconstructAuthString(input io.ReadCloser) *apierror.ApiEr
 // flag for the verifiedEmail db table so they will need to
 // do that before that is set
 func (data *AuthData) createAccount() (*account.Account, *apierror.ApiError) {
-	emailData := splitEmail(data.DataContent[0])
+	// Check for unique email address
+	emailData, emailError := checkEmail(data.DataContent[0])
 
-	if len(emailData) != 2 {
-		// Recieved weird email with more than one '@'
-		return nil, apierror.New("Invalid email recieved", http.StatusBadRequest)
+	if emailError != nil {
+		return nil, emailError
 	}
 
 	accountId, accountIdError := account.GenerateAccountId()
@@ -103,20 +123,24 @@ func (data *AuthData) createAccount() (*account.Account, *apierror.ApiError) {
 	accountData.UserId = accountId
 	accountData.EmailLocal = emailData[0]
 	accountData.EmailDomain = emailData[1]
-	accountData.PasswordHash = passwordHash
+	accountData.PasswordHash = encodeBytes(passwordHash)
 	accountData.EmailVerified = false
-
-	fmt.Println(accountData.PasswordHash)
 
 	return accountData, nil
 }
 
-// SplitEmail takes an email address and splits it into two parts
+// checkEmail takes an email address and splits it into two parts
 // Example: chris@cfrank.org
 // Local: chris
 // Domain: cfrank.org
-// This is done because it makes storing the email easier and
-// allows searching to be done easier
-func splitEmail(email string) []string {
-	return strings.Split(email, "@")
+// Validates that these two parts of the correct length
+// and returns them.
+func checkEmail(email string) ([]string, *apierror.ApiError) {
+	parts := strings.Split(email, "@")
+
+	if len(parts) != 2 || len(email) > 254 || len(parts[0]) > 64 || len(parts[1]) > 190 || !strings.Contains(parts[1], ".") {
+		return nil, apierror.New("Invalid email received", http.StatusBadRequest)
+	}
+
+	return parts, nil
 }

@@ -34,8 +34,8 @@ type HashOptions struct {
 // http://www.tarsnap.com/scrypt/scrypt.pdf
 var DefaultHashOptions = &HashOptions{
 	N:       16384,
-	R:       8,
-	P:       1,
+	R:       10,
+	P:       10,
 	SaltLen: HASH_SALT_BYTES,
 	DKLen:   HASH_DK_BYTES,
 }
@@ -44,7 +44,6 @@ var DefaultHashOptions = &HashOptions{
 // a sufficiently long salt for storage in a database. This function returns
 // an array of:
 // [N:R:P:Salt][Dkey]
-// The scrypt options are returned seperatly instead of being
 func GenerateHashFromPassword(password string, options *HashOptions) ([]byte, *apierror.ApiError) {
 	salt, saltError := GenerateSecureRandomBytes(options.SaltLen)
 
@@ -88,6 +87,18 @@ func CompareHashToPassword(hash, password []byte) *apierror.ApiError {
 	fmt.Println(dkey)
 
 	return apierror.MismatchedHashError
+}
+
+// GenerateEmailVerifier generates a secure random string for use verifying a
+// users email address.
+func GenerateEmailVerifier() ([]byte, *apierror.ApiError) {
+	verifier, verifierError := GenerateSecureRandomBytes(16)
+
+	if verifierError != nil {
+		return nil, apierror.ServerAuthError
+	}
+
+	return verifier, nil
 }
 
 // GenerateSecureRandomBytes generates a cryptographically secure
