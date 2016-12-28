@@ -55,13 +55,15 @@ func NewAuth(w http.ResponseWriter, req *http.Request, params map[string]string)
 
 	accountData.EmailVerifier = emailVerifier
 
-	// Database additions
-	saveError := accountData.Save()
+	// Generate session info
 
-	if saveError != nil {
-		saveError.Handle(w)
-		return
-	}
+	// Database additions
+	// saveError := accountData.Save()
+
+	// if saveError != nil {
+	// 	saveError.Handle(w)
+	// 	return
+	// }
 }
 
 // Deconstruct the auth string from the client

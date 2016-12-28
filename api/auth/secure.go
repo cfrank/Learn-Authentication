@@ -58,10 +58,9 @@ func GenerateHashFromPassword(password string, options *HashOptions) ([]byte, *a
 	}
 
 	// Hash the scrypt derived key with SHA256
-	shaHash := sha256.New()
-	shaHash.Write(scryptHash)
+	passwordHash := GenerateSha256FromBytes(scryptHash)
 
-	return []byte(fmt.Sprintf("%s:%s:%d:%d:%d", encodeBytes(shaHash.Sum(nil)), encodeBytes(salt), options.N, options.R, options.P)), nil
+	return []byte(fmt.Sprintf("%s:%s:%d:%d:%d", encodeBytes(passwordHash), encodeBytes(salt), options.N, options.R, options.P)), nil
 }
 
 // CompareHashToPassword compares in constant time a hash (generated from
@@ -112,6 +111,15 @@ func GenerateSecureRandomBytes(length int) ([]byte, error) {
 	}
 
 	return bytes, nil
+}
+
+// GenerateSha256FromBytes takes a byte slice and returns the sha256 Sum
+func GenerateSha256FromBytes(input []byte) []byte {
+	// Hash the input with SHA256
+	shaHash := sha256.New()
+	shaHash.Write(input)
+
+	return shaHash.Sum(nil)
 }
 
 // decodeHash is a helper function which splits up the hash value

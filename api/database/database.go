@@ -5,6 +5,7 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -38,5 +39,6 @@ func Open() error {
 }
 
 func Close() {
+	fmt.Println("Closing database...")
 	MyDb.Db.Close()
 }
